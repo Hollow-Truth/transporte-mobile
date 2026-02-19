@@ -1,5 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
 
 export default function ConductorLayout() {
   return (
@@ -25,36 +25,28 @@ export default function ConductorLayout() {
         name="index"
         options={{
           title: 'Mi Ruta',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22 }}>🗺️</Text>
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="map" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="trip"
         options={{
           title: 'Viaje',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22 }}>📍</Text>
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="navigate" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="attendance"
         options={{
           title: 'Asistencia',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22 }}>📋</Text>
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="clipboard" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22 }}>👤</Text>
-          ),
+          tabBarIcon: ({ color }) => <Ionicons name="person" size={22} color={color} />,
         }}
       />
     </Tabs>
