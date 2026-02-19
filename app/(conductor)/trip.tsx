@@ -15,17 +15,17 @@ import api from '../../lib/api';
 import { getUser } from '../../lib/auth';
 import { getSocket, connectSocket, disconnectSocket } from '../../lib/socket';
 import { enqueueGpsPoint, flushQueue, getQueueSize } from '../../lib/gps-queue';
+import { SCHOOL, BG_LOCATION_TASK } from '../../lib/constants';
+import { Ionicons } from '@expo/vector-icons';
 
-// Background location task - runs even when app is in background
-const BG_LOCATION_TASK = 'bg-gps-tracking';
-let bgVehicleId: string | null = null;
+// Module-level var shared with background task (cannot use React state in TaskManager callback)
+let _bgVehicleId: string | null = null;
 
 TaskManager.defineTask(BG_LOCATION_TASK, async ({ data, error }) => {
   if (error) {
-    console.error('Background location error:', error);
     return;
   }
-  if (!data || !bgVehicleId) return;
+  if (!data || !_bgVehicleId) return;
 
   const { locations } = data as { locations: Location.LocationObject[] };
   const loc = locations[locations.length - 1];
@@ -33,7 +33,7 @@ TaskManager.defineTask(BG_LOCATION_TASK, async ({ data, error }) => {
 
   // Use GPS queue - auto-buffers when offline, sends when online
   await enqueueGpsPoint({
-    vehiculoId: bgVehicleId,
+    vehiculoId: _bgVehicleId,
     lat: loc.coords.latitude,
     lng: loc.coords.longitude,
     velocidad: loc.coords.speed || 0,
@@ -57,12 +57,6 @@ interface RouteData {
   geometria: any;
   estudiantes: { id: string; nombre: string; apellido: string; latitud: number; longitud: number }[];
 }
-
-const COLEGIO = {
-  latitude: -17.38914530406023,
-  longitude: -66.31402713529513,
-  name: 'Colegio Adventista de Bolivia',
-};
 
 function parseGeometry(geom: any): Position[] {
   if (!geom) return [];
@@ -137,8 +131,8 @@ export default function TripScreen() {
             // No hay trayectoria activa
           }
         }
-      } catch (error) {
-        console.error('Error loading vehicle:', error);
+      } catch {
+        // error loading vehicle
       } finally {
         setLoading(false);
       }
@@ -240,7 +234,7 @@ export default function TripScreen() {
       socket.emit('join:vehicle', { vehiculoId: vehicleId });
 
       // Start background location updates (sends GPS via HTTP even when app is in background)
-      bgVehicleId = vehicleId;
+      _bgVehicleId = vehicleId;
       try {
         const bgRunning = await TaskManager.isTaskRegisteredAsync(BG_LOCATION_TASK);
         if (!bgRunning) {
@@ -255,10 +249,9 @@ export default function TripScreen() {
               notificationColor: '#1e3a8a',
             },
           });
-          console.log('Background location started');
         }
-      } catch (bgErr) {
-        console.log('Could not start background location:', bgErr);
+      } catch {
+        // background location unavailable - foreground GPS will continue
       }
 
       locationSub.current = await Location.watchPositionAsync(
@@ -328,7 +321,6 @@ export default function TripScreen() {
       const msg = isNetworkError
         ? 'Sin conexión a internet. Verifica tu red e intenta de nuevo.'
         : (error.response?.data?.message || 'No se pudo iniciar el viaje');
-      console.log('Trip start rejected:', msg);
       Alert.alert('No se puede iniciar', msg);
     } finally {
       setStarting(false);
@@ -351,7 +343,7 @@ export default function TripScreen() {
                 locationSub.current = null;
               }
               // Stop background location
-              bgVehicleId = null;
+              _bgVehicleId = null;
               try {
                 const bgRunning = await TaskManager.isTaskRegisteredAsync(BG_LOCATION_TASK);
                 if (bgRunning) {
@@ -363,8 +355,7 @@ export default function TripScreen() {
               if (trajectoryId) {
                 try {
                   await api.post(`/gps/trajectory/${trajectoryId}/end`);
-                } catch (endErr) {
-                  console.log('Could not end trajectory on server:', endErr);
+                } catch {
                   // Still stop locally - server will auto-close stale trajectories
                 }
               }
@@ -380,8 +371,7 @@ export default function TripScreen() {
               setCurrentPos(null);
               setQueuedPoints(0);
               Alert.alert('Viaje finalizado', 'El viaje se ha registrado correctamente');
-            } catch (error) {
-              console.error('Error stopping trip:', error);
+            } catch {
               Alert.alert('Error', 'No se pudo finalizar el viaje');
             }
           },
@@ -411,7 +401,7 @@ export default function TripScreen() {
   if (!vehicleId) {
     return (
       <View style={styles.center}>
-        <Text style={styles.emptyIcon}>🚌</Text>
+        <Ionicons name="bus" size={60} color="#64748b" style={{ marginBottom: 16 }} />
         <Text style={styles.emptyTitle}>Sin vehículo</Text>
         <Text style={styles.emptyText}>
           No tienes un vehículo asignado para iniciar viajes.
@@ -436,7 +426,7 @@ export default function TripScreen() {
       allPoints.push({ latitude: s.latitud, longitude: s.longitud });
     }
   });
-  allPoints.push({ latitude: COLEGIO.latitude, longitude: COLEGIO.longitude });
+  allPoints.push({ latitude: SCHOOL.latitude, longitude: SCHOOL.longitude });
   if (routeCoords.length > 0) {
     allPoints.push(routeCoords[0]);
     allPoints.push(routeCoords[routeCoords.length - 1]);
@@ -514,10 +504,10 @@ export default function TripScreen() {
         {/* Colegio (azul) */}
         <Marker
           coordinate={{
-            latitude: COLEGIO.latitude,
-            longitude: COLEGIO.longitude,
+            latitude: SCHOOL.latitude,
+            longitude: SCHOOL.longitude,
           }}
-          title={COLEGIO.name}
+          title={SCHOOL.name}
           pinColor="blue"
         />
 
@@ -614,10 +604,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f1f5f9',
     padding: 24,
-  },
-  emptyIcon: {
-    fontSize: 60,
-    marginBottom: 16,
   },
   emptyTitle: {
     fontSize: 20,

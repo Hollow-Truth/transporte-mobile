@@ -54,3 +54,6 @@ export const SCHOOL = {
   longitude: -66.31402713529513,
   name: 'Colegio Adventista de Bolivia',
 } as const;
+
+// Background location task name
+export const BG_LOCATION_TASK = 'bg-gps-tracking';

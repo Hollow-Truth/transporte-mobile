@@ -81,7 +81,6 @@ export async function flushQueue(): Promise<void> {
     if (sent.length > 0) {
       // Remove sent points
       memoryQueue = memoryQueue.filter((_, idx) => !sent.includes(idx));
-      console.log(`GPS queue: flushed ${sent.length} points, ${memoryQueue.length} remaining`);
       persistQueue();
     }
   } finally {

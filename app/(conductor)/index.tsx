@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../../lib/api';
 import { getUser } from '../../lib/auth';
+import { SCHOOL } from '../../lib/constants';
 
 interface Student {
   id: string;
@@ -53,12 +55,6 @@ interface Vehicle {
   modelo: string;
   color: string;
 }
-
-const COLEGIO = {
-  latitude: -17.38914530406023,
-  longitude: -66.31402713529513,
-  name: 'Colegio Adventista de Bolivia',
-};
 
 // Parsear geometría WKT LINESTRING a coordenadas
 function parseGeometry(geom: any): { latitude: number; longitude: number }[] {
@@ -123,8 +119,8 @@ export default function DashboardScreen() {
         const routeDetail = await api.get(`/routes/${myRoute.id}`);
         setRoute(routeDetail.data);
       }
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    } catch {
+      // error fetching data
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -164,7 +160,7 @@ export default function DashboardScreen() {
   if (!vehicle) {
     return (
       <View style={styles.center}>
-        <Text style={styles.emptyIcon}>🚌</Text>
+        <Ionicons name="bus" size={60} color="#64748b" style={{ marginBottom: 16 }} />
         <Text style={styles.emptyTitle}>Sin vehículo asignado</Text>
         <Text style={styles.emptyText}>
           No tienes un vehículo asignado. Contacta al administrador.
@@ -176,7 +172,7 @@ export default function DashboardScreen() {
   if (!route) {
     return (
       <View style={styles.center}>
-        <Text style={styles.emptyIcon}>🗺️</Text>
+        <Ionicons name="map" size={60} color="#64748b" style={{ marginBottom: 16 }} />
         <Text style={styles.emptyTitle}>Sin ruta asignada</Text>
         <Text style={styles.emptyText}>
           Tu vehículo ({vehicle.placa}) no tiene una ruta asignada.
@@ -194,7 +190,7 @@ export default function DashboardScreen() {
       latitude: s.latitud,
       longitude: s.longitud,
     })),
-    { latitude: COLEGIO.latitude, longitude: COLEGIO.longitude },
+    { latitude: SCHOOL.latitude, longitude: SCHOOL.longitude },
   ];
 
   if (route.inicioLat && route.inicioLng) {
@@ -232,7 +228,10 @@ export default function DashboardScreen() {
     >
       {/* Info del vehículo */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🚌 Mi Vehículo</Text>
+        <View style={styles.cardTitleRow}>
+          <Ionicons name="bus" size={16} color="#1e293b" />
+          <Text style={styles.cardTitle}>Mi Vehículo</Text>
+        </View>
         <Text style={styles.cardText}>
           {vehicle.marca} {vehicle.modelo} • {vehicle.color}
         </Text>
@@ -241,7 +240,10 @@ export default function DashboardScreen() {
 
       {/* Info de la ruta */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🗺️ {route.nombre}</Text>
+        <View style={styles.cardTitleRow}>
+          <Ionicons name="map" size={16} color="#1e293b" />
+          <Text style={styles.cardTitle}>{route.nombre}</Text>
+        </View>
         {route.descripcion ? (
           <Text style={styles.cardText}>{route.descripcion}</Text>
         ) : null}
@@ -249,10 +251,16 @@ export default function DashboardScreen() {
           {route.estudiantes?.length || 0} estudiantes
         </Text>
         {route.inicioNombre ? (
-          <Text style={styles.routeInfo}>📍 Inicio: {route.inicioNombre}</Text>
+          <View style={styles.routeInfoRow}>
+            <Ionicons name="location" size={13} color="#475569" />
+            <Text style={styles.routeInfo}>Inicio: {route.inicioNombre}</Text>
+          </View>
         ) : null}
         {route.destinoNombre ? (
-          <Text style={styles.routeInfo}>🏁 Destino: {route.destinoNombre}</Text>
+          <View style={styles.routeInfoRow}>
+            <Ionicons name="flag" size={13} color="#475569" />
+            <Text style={styles.routeInfo}>Destino: {route.destinoNombre}</Text>
+          </View>
         ) : null}
       </View>
 
@@ -299,10 +307,10 @@ export default function DashboardScreen() {
           {/* Marcador del colegio (azul) */}
           <Marker
             coordinate={{
-              latitude: COLEGIO.latitude,
-              longitude: COLEGIO.longitude,
+              latitude: SCHOOL.latitude,
+              longitude: SCHOOL.longitude,
             }}
-            title={COLEGIO.name}
+            title={SCHOOL.name}
             pinColor="blue"
           />
 
@@ -344,9 +352,10 @@ export default function DashboardScreen() {
 
       {/* Lista de estudiantes */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>
-          👥 Estudiantes ({route.estudiantes?.length || 0})
-        </Text>
+        <View style={styles.cardTitleRow}>
+          <Ionicons name="people" size={16} color="#1e293b" />
+          <Text style={styles.cardTitle}>Estudiantes ({route.estudiantes?.length || 0})</Text>
+        </View>
         {route.estudiantes?.map((student) => (
           <TouchableOpacity
             key={student.id}
@@ -370,7 +379,10 @@ export default function DashboardScreen() {
         style={styles.startButton}
         onPress={() => router.push('/(conductor)/trip')}
       >
-        <Text style={styles.startButtonText}>🚀 Iniciar Viaje</Text>
+        <View style={styles.cardTitleRow}>
+          <Ionicons name="rocket" size={20} color="#fff" />
+          <Text style={styles.startButtonText}>Iniciar Viaje</Text>
+        </View>
       </TouchableOpacity>
 
       <View style={{ height: 30 }} />
@@ -395,10 +407,6 @@ const styles = StyleSheet.create({
     color: '#64748b',
     fontSize: 16,
   },
-  emptyIcon: {
-    fontSize: 60,
-    marginBottom: 16,
-  },
   emptyTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -422,11 +430,22 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  cardTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: 6,
+  },
+  routeInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
   },
   cardText: {
     fontSize: 14,
