@@ -8,9 +8,11 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import api from '../../lib/api';
 import { getUser, logout, User } from '../../lib/auth';
+import { COLORS } from '../../lib/constants';
 
 interface Vehicle {
   id: string;
@@ -90,7 +92,10 @@ export default function ProfileScreen() {
       {/* Info del vehículo */}
       {vehicle ? (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🚌 Vehículo Asignado</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <Ionicons name="bus-outline" size={18} color={COLORS.primary} />
+            <Text style={styles.cardTitle}>Vehículo Asignado</Text>
+          </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Placa</Text>
             <Text style={styles.infoValue}>{vehicle.placa}</Text>
@@ -116,7 +121,10 @@ export default function ProfileScreen() {
         </View>
       ) : (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🚌 Vehículo</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <Ionicons name="bus-outline" size={18} color={COLORS.primary} />
+            <Text style={styles.cardTitle}>Vehículo</Text>
+          </View>
           <Text style={styles.noVehicle}>No tienes vehículo asignado</Text>
         </View>
       )}
@@ -199,7 +207,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: 12,
   },
   infoRow: {
     flexDirection: 'row',
