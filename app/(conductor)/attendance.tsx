@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import api from '../../lib/api';
 import { getUser } from '../../lib/auth';
@@ -215,7 +216,7 @@ export default function AttendanceScreen() {
   if (!vehiculoId || !rutaId) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 40, marginBottom: 12 }}>📋</Text>
+        <Ionicons name="clipboard-outline" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>Sin vehículo o ruta asignada</Text>
         <Text style={styles.emptyText}>
           Contacta al administrador para asignar un vehículo y ruta.
