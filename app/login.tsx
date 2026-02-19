@@ -10,6 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { login } from '../lib/auth';
 
@@ -52,7 +53,7 @@ export default function LoginScreen() {
       <View style={styles.inner}>
         <View style={styles.header}>
           <View style={styles.iconCircle}>
-            <Text style={styles.iconText}>🚌</Text>
+            <Ionicons name="bus" size={32} color="#ffffff" />
           </View>
           <Text style={styles.title}>Transporte Escolar</Text>
           <Text style={styles.subtitle}>App Conductor</Text>
@@ -120,9 +121,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  iconText: {
-    fontSize: 40,
   },
   title: {
     fontSize: 28,
