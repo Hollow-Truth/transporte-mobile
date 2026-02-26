@@ -4,12 +4,12 @@
 
 // ====== CONFIGURACIÓN DE SERVIDOR ======
 // LOCAL: Descomentar para desarrollo local
-// export const API_URL = 'http://192.168.100.241:3000/api';
-// export const SOCKET_URL = 'http://192.168.100.241:3000';
+export const API_URL = 'http://192.168.100.241:3000/api';
+export const SOCKET_URL = 'http://192.168.100.241:3000';
 
 // RAILWAY: Producción
-export const API_URL = 'https://transporte-api-production-0096.up.railway.app/api';
-export const SOCKET_URL = 'https://transporte-api-production-0096.up.railway.app';
+// export const API_URL = 'https://transporte-api-production-0096.up.railway.app/api';
+// export const SOCKET_URL = 'https://transporte-api-production-0096.up.railway.app';
 
 // Tema de colores - Consistente con la web (#1e3a8a azul)
 export const COLORS = {
