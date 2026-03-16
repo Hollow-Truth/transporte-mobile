@@ -43,8 +43,7 @@ export default function ProfileScreen() {
           );
           setVehicle(myVehicle || null);
         }
-      } catch (error) {
-        console.error('Error loading profile:', error);
+      } catch {
       } finally {
         setLoading(false);
       }

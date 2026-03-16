@@ -96,8 +96,7 @@ export default function AttendanceScreen() {
         `/attendance/route-status/${myRoute.id}/${myVehicle.id}`,
       );
       setStudents(statusRes.data);
-    } catch (error) {
-      console.error('Error loading attendance:', error);
+    } catch {
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -362,9 +361,12 @@ export default function AttendanceScreen() {
               {/* Geofencing info */}
               {student.abordaje && student.abordaje.distancia !== null && (
                 <View style={styles.geoInfo}>
-                  <Text style={styles.geoIcon}>
-                    {student.abordaje.validado ? '✅' : '⚠️'}
-                  </Text>
+                  <Ionicons
+                    name={student.abordaje.validado ? 'checkmark-circle' : 'warning'}
+                    size={14}
+                    color={student.abordaje.validado ? COLORS.success : COLORS.warning}
+                    style={{ marginRight: 4 }}
+                  />
                   <Text style={styles.geoText}>
                     {student.abordaje.validado
                       ? `Validado (${Math.round(student.abordaje.distancia)}m)`
@@ -526,7 +528,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  geoIcon: { fontSize: 12, marginRight: 4 },
   geoText: { fontSize: 11, color: COLORS.textSecondary },
 
   // Time
