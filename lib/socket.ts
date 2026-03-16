@@ -20,17 +20,9 @@ export async function getSocket(): Promise<Socket> {
       timeout: 15000,
     });
 
-    socket.on('connect', () => {
-      console.log('Socket conductor conectado');
-    });
-
-    socket.on('disconnect', (reason) => {
-      console.log('Socket conductor desconectado:', reason);
-    });
-
-    socket.on('connect_error', (err) => {
-      console.log('Socket conductor error:', err.message);
-    });
+    socket.on('connect', () => { /* connected */ });
+    socket.on('disconnect', () => { /* disconnected */ });
+    socket.on('connect_error', () => { /* connection error */ });
 
     // Monitor network changes - reconnect socket when network recovers
     if (!netInfoUnsubscribe) {
@@ -38,10 +30,8 @@ export async function getSocket(): Promise<Socket> {
       netInfoUnsubscribe = NetInfo.addEventListener((state) => {
         if (!state.isConnected) {
           wasDisconnected = true;
-          console.log('Red perdida - socket pausado');
         } else if (wasDisconnected && socket) {
           wasDisconnected = false;
-          console.log('Red recuperada - reconectando socket');
           // Force reconnect by disconnecting and reconnecting
           if (socket.connected) {
             socket.disconnect();
