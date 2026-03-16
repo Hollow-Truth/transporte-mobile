@@ -385,8 +385,8 @@ export default function TripScreen() {
       if (locationSub.current) {
         locationSub.current.remove();
       }
-      disconnectSocket();
-      // Don't stop background location on unmount - let it run while navigating
+      // Socket NO se desconecta en unmount — el viaje puede continuar en background.
+      // disconnectSocket() se llama solo en stopTrip() cuando el viaje termina.
     };
   }, []);
 
@@ -567,7 +567,10 @@ export default function TripScreen() {
               </View>
             </View>
             <TouchableOpacity style={styles.stopButton} onPress={stopTrip}>
-              <Text style={styles.stopButtonText}>⏹ Detener Viaje</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Ionicons name="stop" size={22} color="#fff" />
+                <Text style={styles.stopButtonText}>Detener Viaje</Text>
+              </View>
             </TouchableOpacity>
           </>
         ) : (
@@ -584,7 +587,10 @@ export default function TripScreen() {
               {starting ? (
                 <ActivityIndicator color="#fff" size="large" />
               ) : (
-                <Text style={styles.goButtonText}>▶ Iniciar Viaje</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Ionicons name="play" size={26} color="#fff" />
+                  <Text style={styles.goButtonText}>Iniciar Viaje</Text>
+                </View>
               )}
             </TouchableOpacity>
           </>
