@@ -3,9 +3,13 @@
 // ============================================
 
 // ====== CONFIGURACIÓN DE SERVIDOR ======
-// LOCAL: Descomentar para desarrollo local
-export const API_URL = 'http://192.168.100.241:3000/api';
-export const SOCKET_URL = 'http://192.168.100.241:3000';
+// LOCAL:
+// export const API_URL = 'http://192.168.100.241:3000/api';
+// export const SOCKET_URL = 'http://192.168.100.241:3000';
+
+// CLOUDFLARED: Pruebas en calle
+export const API_URL = 'https://mem-constitutional-tribe-symantec.trycloudflare.com/api';
+export const SOCKET_URL = 'https://mem-constitutional-tribe-symantec.trycloudflare.com';
 
 // RAILWAY: Producción
 // export const API_URL = 'https://transporte-api-production-0096.up.railway.app/api';

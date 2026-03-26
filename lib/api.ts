@@ -6,6 +6,7 @@ export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   },
   timeout: 15000,
 });
@@ -50,7 +51,6 @@ api.interceptors.response.use(
     // Retry with exponential backoff
     config._retryCount = (config._retryCount || 0) + 1;
     const delay = Math.min(1000 * Math.pow(2, config._retryCount - 1), 8000);
-    console.log(`Retry ${config._retryCount}/3 for ${config.url} in ${delay}ms`);
     await new Promise((resolve) => setTimeout(resolve, delay));
     return api(config);
   }

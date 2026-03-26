@@ -363,6 +363,12 @@ export default function TripScreen() {
               // Flush any remaining queued GPS points
               flushQueue();
 
+              // Notificar al servidor antes de desconectar
+              const s = await getSocket().catch(() => null);
+              if (s) {
+                s.emit('leave:vehicle', { vehiculoId: vehicleId });
+                s.off();
+              }
               disconnectSocket();
 
               setTripActive(false);
